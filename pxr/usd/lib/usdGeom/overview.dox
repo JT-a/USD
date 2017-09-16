@@ -5,9 +5,9 @@
 \mainpage UsdGeom : USD Geometry Schema
 \endif
 
-\brief <b>UsdGeom</b> defines the 3D graphics-related prim and property
-schemas that together form a basis for interchanging geometry between DCC
-tools in a graphics pipeline.
+<b>UsdGeom</b> defines the 3D graphics-related prim and property schemas that
+together form a basis for interchanging geometry between DCC tools in a
+graphics pipeline.
 
 \section UsdGeom_Structure Class Structure
 
@@ -83,6 +83,13 @@ transmit these volumes from dressing/animation tools to
 simulation/lighting/rendering tools, thus their presence in our schema.  We
 expect to support these and other "non-native" schema types as some form of
 proxy or "pass through" prim in DCC's that do not understand them.
+
+\subsection UsdGeom_PointInstancer UsdGeomPointInstancer
+
+UsdGeomPointInstancer provides a powerful, scalable encoding for scattering
+many instances of multiple prototype objects (which can be arbitrary subtrees
+of the UsdStage that contains the PointInstancer), animating both the
+instances and prototypes, and pruning/masking instances based on integer ID.
 
 
 \subsection UsdGeom_Camera UsdGeomCamera

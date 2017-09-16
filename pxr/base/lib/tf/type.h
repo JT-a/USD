@@ -24,10 +24,10 @@
 #ifndef TF_TYPE_H
 #define TF_TYPE_H
 
+#include "pxr/pxr.h"
+
+#include "pxr/base/tf/api.h"
 #include "pxr/base/tf/cxxCast.h"
-#include "pxr/base/tf/pyIdentity.h"
-#include "pxr/base/tf/pyLock.h"
-#include "pxr/base/tf/pyObjectFinder.h"
 #include "pxr/base/tf/refPtr.h"
 #include "pxr/base/tf/registryManager.h"
 #include "pxr/base/tf/traits.h"
@@ -36,7 +36,6 @@
 #include <boost/function.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/operators.hpp>
-#include <boost/python/object.hpp>
 #include <boost/scoped_ptr.hpp>
 
 #include <iosfwd>
@@ -46,10 +45,13 @@
 #include <typeinfo>
 #include <vector>
 
+PXR_NAMESPACE_OPEN_SCOPE
 
+class TfPyObjWrapper;
 class TfType;
-class Tf_TypeRegistry;
 
+/// \class TfType
+///
 /// TfType represents a dynamic runtime type.
 ///
 /// TfTypes are created and discovered at runtime, rather than compile
@@ -76,7 +78,7 @@ public:
     /// Base class of all factory types.
     class FactoryBase {
     public:
-        virtual ~FactoryBase();
+        TF_API virtual ~FactoryBase();
     };
 
 private:
@@ -120,9 +122,9 @@ private:
 public:
     
     enum LegacyFlags {
-        ABSTRACT =       0x01,   //!< Abstract (unmanufacturable and unclonable)
-        CONCRETE =       0x02,   //!< Not abstract
-        MANUFACTURABLE = 0x08,   //!< Manufacturable type (implies concrete)
+        ABSTRACT =       0x01,   ///< Abstract (unmanufacturable and unclonable)
+        CONCRETE =       0x02,   ///< Not abstract
+        MANUFACTURABLE = 0x08,   ///< Manufacturable type (implies concrete)
     };
 
     // This is a non-templated base class for the templated
@@ -130,7 +132,7 @@ public:
     struct PyPolymorphicBase
     {
     protected:
-        virtual ~PyPolymorphicBase();
+        TF_API virtual ~PyPolymorphicBase();
     };
 
 private:
@@ -154,6 +156,7 @@ public:
     ///     TfType().IsUnknown() == true
     /// \endcode
     ///
+    TF_API
     TfType();
 
     /// Return an empty TfType, representing the unknown type.
@@ -164,6 +167,7 @@ public:
     ///
     /// \see IsUnknown()
     ///
+    TF_API
     static TfType const& GetUnknownType();
 
     /// Equality operator.
@@ -250,6 +254,7 @@ public:
     ///    Find(obj) == FindByName( Find(obj).GetTypeName() )
     /// \endcode
     ///
+    TF_API
     static TfType const& FindByName(const std::string &name);
 
     /// Retrieve the \c TfType that derives from this type and has the
@@ -257,6 +262,7 @@ public:
     ///
     /// \see AddAlias
     ///
+    TF_API
     TfType const& FindDerivedByName(const std::string &name) const;
 
     /// Retrieve the \c TfType that derives from BASE and has the
@@ -276,7 +282,8 @@ public:
     /// Retrieve the \c TfType corresponding to an obj with the
     /// given Python class \c classObj.
     ///
-    static TfType const& FindByPythonClass(const boost::python::object & classObj);
+    TF_API
+    static TfType const& FindByPythonClass(const TfPyObjWrapper & classObj);
 
     /// @}
 
@@ -290,12 +297,14 @@ public:
     /// If a type is specified with no bases, it is implicitly
     /// considered to derive from the root type.
     ///
+    TF_API
     static TfType const& GetRoot();
 
     /// Return the machine-independent name for this type.
     /// This name is specified when the TfType is declared.
     /// \see Declare()
     ///
+    TF_API
     const std::string &GetTypeName() const;
 
     /// Return a C++ RTTI type_info for this type.
@@ -305,6 +314,7 @@ public:
     ///
     /// \see Define()
     ///
+    TF_API
     const std::type_info &GetTypeid() const;
 
     /// Return the canonical typeName used for a given std::type_info.
@@ -314,38 +324,45 @@ public:
     /// of the type_info, stripped of namespaces.  The real answer
     /// is implemented by this method.
     ///
+    TF_API
     static std::string GetCanonicalTypeName(const std::type_info &);
 
     /// Returns a vector of the aliases registered for the derivedType
     /// under this, the base type.
     /// \see AddAlias()
     ///
+    TF_API
     std::vector<std::string> GetAliases(TfType derivedType) const;
 
     /// Return the Python class object for this type.
     ///
     /// If this type is unknown or has not yet had a Python class
     /// defined, this will return \c None, as an empty
-    /// \c boost::python::object().
+    /// \c TfPyObjWrapper
     ///
     /// \see DefinePythonClass()
     ///
-    boost::python::object GetPythonClass() const;
+    TF_API
+    TfPyObjWrapper GetPythonClass() const;
 
     /// Return a vector of types from which this type was derived.
     ///
+    TF_API
     std::vector<TfType> GetBaseTypes() const;
 
     /// Return a vector of types derived directly from this type.
     ///
+    TF_API
     std::vector<TfType> GetDirectlyDerivedTypes() const;
 
     /// Return the canonical type for this type.
+    TF_API
     TfType const& GetCanonicalType() const;
     
     /// Return the set of all types derived (directly or indirectly)
     /// from this type.
     ///
+    TF_API
     void GetAllDerivedTypes( std::set<TfType> *result ) const;
 
     /// Build a vector of all ancestor types inherited by this type.
@@ -369,11 +386,13 @@ public:
     ///   "A Monotonic Superclass Linearization for Dylan."  OOPSLA 96.
     ///   http://www.webcom.com/haahr/dylan/linearization-oopsla96.html
     ///
+    TF_API
     void GetAllAncestorTypes(std::vector<TfType> *result) const;
 
     /// Return true if this type is the same as or derived from \p queryType.
     /// If \c queryType is unknown, this always returns \c false.
     ///
+    TF_API
     bool IsA(TfType queryType) const;
 
     /// Return true if this type is the same as or derived from T.
@@ -403,7 +422,7 @@ public:
 
     /// Boolean not operator -- return true if this type is unknown, false
     /// otherwise.
-    bool operator !() const { return not bool(*this); }
+    bool operator !() const { return !bool(*this); }
 
     /// Return true if this is the root type.
     ///
@@ -411,10 +430,12 @@ public:
 
     /// Return true if this is an enum type.
     ///
+    TF_API
     bool IsEnumType() const;
 
     /// Return true if this is a plain old data type, as defined by C++.
     ///
+    TF_API
     bool IsPlainOldDataType() const;
 
     /// Return the size required to hold an instance of this type on the stack
@@ -424,6 +445,7 @@ public:
     /// value is not very useful for Python types (it will always be
     /// sizeof(boost::python::object)).
     ///
+    TF_API
     size_t GetSizeof() const;
 
     /// @}
@@ -437,6 +459,7 @@ public:
     /// type to exist, prior to it being fleshed out with more
     /// declarations (specifying base types) or a definition.
     ///
+    TF_API
     static TfType const&
     Declare( const std::string & typeName );
 
@@ -454,6 +477,7 @@ public:
     ///
     /// It is an error to redeclare a type's definitionCallback.
     ///
+    TF_API
     static TfType const&
     Declare( const std::string & typeName,
              const std::vector<TfType> & bases,
@@ -484,7 +508,8 @@ public:
 
     /// Define the Python class object corresponding to this TfType.
     /// \see TfTypePythonClass
-    void DefinePythonClass(boost::python::object &classObj) const;
+    TF_API
+    void DefinePythonClass(const TfPyObjWrapper &classObj) const;
 
     /// Add an alias for DERIVED beneath BASE.
     ///
@@ -505,6 +530,7 @@ public:
     /// to the given \c base type; aliases must be unique beneath that
     /// base type.
     ///
+    TF_API
     void AddAlias(TfType base, const std::string &name) const;
 
     /// Convenience method to add an alias and return *this.
@@ -520,27 +546,24 @@ public:
     /// \name Pointer casts
     /// @{
 
-    /*!
-     * \brief Cast \c addr to the address corresponding to the type
-     * \c ancestor.
-     *
-     * (This is a dangerous function; there's probably a much better way to do
-     * whatever it is you're trying to do.)
-     *
-     * With multiple inheritance, you can't do a reinterpret_cast back
-     * to an ancestor type; this function figures out how to cast addr
-     * to the address corresponding to the type ancestor if in fact
-     * ancestor is really an ancestor of the type corresponding to \c
-     * *this.
-     *
-     * In order for this function to work correctly, \p addr must have been
-     * a pointer of type corresponding to \c *this, which was cast to void;
-     * and of course the type of \p ancestor must be an ancestor of the type
-     * of \c *this.
-     *
-     * You are warned:  this is deadly dangerous stuff, and you shouldn't be
-     * doing it!
-     */
+    /// Cast \c addr to the address corresponding to the type \c ancestor.
+    ///
+    /// (This is a dangerous function; there's probably a much better way to
+    /// do whatever it is you're trying to do.)
+    ///
+    /// With multiple inheritance, you can't do a reinterpret_cast back to an
+    /// ancestor type; this function figures out how to cast addr to the
+    /// address corresponding to the type ancestor if in fact ancestor is
+    /// really an ancestor of the type corresponding to \c *this.
+    ///
+    /// In order for this function to work correctly, \p addr must have been a
+    /// pointer of type corresponding to \c *this, which was cast to void; and
+    /// of course the type of \p ancestor must be an ancestor of the type of
+    /// \c *this.
+    ///
+    /// \warning You are warned: this is deadly dangerous stuff, and you
+    /// shouldn't be doing it!
+    TF_API
     void* CastToAncestor(TfType ancestor, void* addr) const;
 
     const void* CastToAncestor(TfType ancestor,
@@ -548,23 +571,21 @@ public:
         return CastToAncestor(ancestor, const_cast<void*>(addr));
     }
     
-    /*!
-     * \brief Cast \c addr, which pointed to the ancestor type \p ancestor,
-     * to the type of \c *this.
-     *
-     * This function is the opposite of \c CastToAncestor(); the assumption
-     * is that \c addr was a pointer to the type corresponding to
-     * \c ancestor, and was then reinterpret-cast to \c void*, but now
-     * you wish to turn cast the pointer to the type corresponding to
-     * \c *this.  While the fact that \p addr was a pointer of type
-     * \c ancestor is taken on faith, a runtime check is performed to
-     * verify that the underlying object pointed to by \p addr is of
-     * type \c *this (or derived from \c *this).
-     *
-     * Again, this is dangerous territory, and there's probably something
-     * much better than using this function.
-     */
-
+    /// Cast \c addr, which pointed to the ancestor type \p ancestor, to the
+    /// type of \c *this.
+    ///
+    /// This function is the opposite of \c CastToAncestor(); the assumption
+    /// is that \c addr was a pointer to the type corresponding to \c
+    /// ancestor, and was then reinterpret-cast to \c void*, but now you wish
+    /// to turn cast the pointer to the type corresponding to \c *this.  While
+    /// the fact that \p addr was a pointer of type \c ancestor is taken on
+    /// faith, a runtime check is performed to verify that the underlying
+    /// object pointed to by \p addr is of type \c *this (or derived from \c
+    /// *this).
+    ///
+    /// \warning Again, this is dangerous territory, and there's probably
+    /// something much better than using this function.
+    TF_API
     void* CastFromAncestor(TfType ancestor, void* addr) const;
 
     const void* CastFromAncestor(TfType ancestor,
@@ -574,13 +595,13 @@ public:
 
     /// @}
 
-
     /// \name Instantiation / Manufacturing
     /// @{
 
     /// Sets the factory object for this type.  A type's factory typically
     /// has methods to instantiate the type given various arguments and must
     /// inherit from \c FactoryBase.  The factory cannot be changed once set.
+    TF_API
     void SetFactory(std::unique_ptr<FactoryBase> factory) const;
 
     /// Sets the factory object for this type.  A type's factory typically
@@ -631,10 +652,11 @@ public:
 
     /// @}
 
-
 private:
+    TF_API
     FactoryBase* _GetFactory() const;
 
+    TF_API
     static TfType const &_FindImplPyPolymorphic(PyPolymorphicBase const *ptr);
     
     // PyPolymorphic case.
@@ -649,8 +671,8 @@ private:
     // Polymorphic.
     template <class T>
     static typename std::enable_if<
-        std::is_polymorphic<T>::value and
-        not std::is_base_of<PyPolymorphicBase, T>::value, TfType const &>::type
+        std::is_polymorphic<T>::value &&
+        !std::is_base_of<PyPolymorphicBase, T>::value, TfType const &>::type
     _FindImpl(T const *rawPtr) {
         if (auto ptr = dynamic_cast<PyPolymorphicBase const *>(rawPtr))
             return _FindImplPyPolymorphic(ptr);
@@ -659,7 +681,7 @@ private:
 
     template <class T>
     static typename std::enable_if<
-        not std::is_polymorphic<T>::value, TfType const &>::type
+        !std::is_polymorphic<T>::value, TfType const &>::type
     _FindImpl(T const *rawPtr) {
         return Find(typeid(T));
     }
@@ -679,10 +701,12 @@ private:
     void _AddBase( TfType base ) const;
 
     // Add the given function for casting to/from the given baseType.
+    TF_API
     void _AddCppCastFunc(
         const std::type_info &baseTypeInfo, _CastFunction) const;
 
     // Define this TfType to have the given type_info.
+    TF_API
     void _DefineCppType(const std::type_info &,
                         size_t sizeofType,
                         bool isPodType,
@@ -693,6 +717,7 @@ private:
 
     // Retrieve the \c TfType corresponding to an obj with the
     // given \c type_info.
+    TF_API
     static TfType const& _FindByTypeid(const std::type_info &);
 
     // Pointer to internal type representation.
@@ -700,14 +725,11 @@ private:
     _TypeInfo *_info;
 };
 
-
-//! \brief Output a TfType, using the machine-independent type name.
-// \ingroup group_tf_DebuggingOutput
-std::ostream& operator<<(std::ostream& out, const TfType &t);
-
+/// Output a TfType, using the machine-independent type name.
+/// \ingroup group_tf_DebuggingOutput
+TF_API std::ostream& operator<<(std::ostream& out, const TfType &t);
 
 /// Metafunction returning sizeof(T) for a type T (or 0 if T is a void type).
-///
 template <typename T>
 struct TfSizeofType {
     static const size_t value = sizeof(T);
@@ -741,9 +763,9 @@ TfType::_TypeDefiner<T>::_TypeDefiner(TfType const& type)
     _type->_DefineCppType(typeid(T), sizeofType, isPodType, isEnumType);
 }
 
+PXR_NAMESPACE_CLOSE_SCOPE
 
 // Implementation details are put in this header.
 #include "pxr/base/tf/type_Impl.h"
 
 #endif // TF_TYPE_H
-

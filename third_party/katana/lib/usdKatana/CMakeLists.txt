@@ -11,9 +11,12 @@ pxr_shared_library(${PXR_PACKAGE}
         sdf
         usd
         usdImaging
+        usdImagingGL
         usdShade
         usdGeom
+        usdLux
         usdRi
+        usdUI
         usdUtils
         cameraUtil
         katanaAttrfncApi
@@ -22,6 +25,7 @@ pxr_shared_library(${PXR_PACKAGE}
 
     PUBLIC_CLASSES
         attrMap
+        baseMaterialHelpers
         blindDataObject
         cache
         debugCodes
@@ -39,13 +43,19 @@ pxr_shared_library(${PXR_PACKAGE}
         readCamera
         readConstraintTarget
         readGprim
-        readLook
+        readLight
+        readLightFilter
+        readMaterial
         readMesh
         readModel
         readNurbsPatch
+        readPointInstancer
         readPoints
         readPrim
         readXformable
+
+    PUBLIC_HEADERS
+        api.h
 
     PYMODULE_CPPFILES
         wrapBlindDataObject.cpp

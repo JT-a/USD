@@ -71,6 +71,7 @@ class GfMatrix3{{ SCL[0] }};
     /// uninitialized elements will be filled in with the
     /// corresponding elements from an identity matrix.
     ///
+    GF_API
     explicit {{ MAT }}(const std::vector<{{ S }}>& r0,
                         const std::vector<{{ S }}>& r1,
                         const std::vector<{{ S }}>& r2,
@@ -78,14 +79,16 @@ class GfMatrix3{{ SCL[0] }};
 
 {% endfor %}
 {% if SCL == 'double' %}
-    /// Constructor. Initializes a transformation matrix to perform the indicated
-    /// rotation and translation.
+    /// Constructor. Initializes a transformation matrix to perform the
+    /// indicated rotation and translation.
+    GF_API
     {{ MAT }}(const GfRotation& rotate,
                const GfVec3{{ SCL[0] }}& translate);
 
 {% endif %}
-    /// Constructor. Initializes a transformation matrix to perform the indicated
-    /// rotation and translation.
+    /// Constructor. Initializes a transformation matrix to perform the
+    /// indicated rotation and translation.
+    GF_API
     {{ MAT }}(const GfMatrix3{{ SCL[0] }}& rotmx,
                const GfVec3{{ SCL[0] }}& translate);
 {% endblock customConstructors %}
@@ -118,31 +121,34 @@ class GfMatrix3{{ SCL[0] }};
         // XXX Should add GfAreOrthogonal(v0, v1, v2) (which also
         //     GfRotation::Decompose() could use).
         GfVec3{{ SCL[0] }} axis0(GetRow3(0)), axis1(GetRow3(1)), axis2(GetRow3(2));
-	return (GfAbs(GfDot(axis0, axis1)) < GF_MIN_ORTHO_TOLERANCE and
-                GfAbs(GfDot(axis0, axis2)) < GF_MIN_ORTHO_TOLERANCE and
+        return (GfAbs(GfDot(axis0, axis1)) < GF_MIN_ORTHO_TOLERANCE && 
+                GfAbs(GfDot(axis0, axis2)) < GF_MIN_ORTHO_TOLERANCE && 
                 GfAbs(GfDot(axis1, axis2)) < GF_MIN_ORTHO_TOLERANCE);
     }
 
-    /// Makes the matrix orthonormal in place. This is an iterative method that
-    /// is much more stable than the previous cross/cross method.  If the
+    /// Makes the matrix orthonormal in place. This is an iterative method
+    /// that is much more stable than the previous cross/cross method.  If the
     /// iterative method does not converge, a warning is issued.
     ///
     /// Returns true if the iteration converged, false otherwise.  Leaves any
     /// translation part of the matrix unchanged.  If \a issueWarning is true,
     /// this method will issue a warning if the iteration does not converge,
     /// otherwise it will be silent.
+    GF_API
     bool Orthonormalize(bool issueWarning=true);
 
     /// Returns an orthonormalized copy of the matrix.
+    GF_API
     {{ MAT }} GetOrthonormalized(bool issueWarning=true) const;
 
-    /// Returns the sign of the determinant of the upper 3x3 matrix, i.e. 1 for
-    /// a right-handed matrix, -1 for a left-handed matrix, and 0 for a
+    /// Returns the sign of the determinant of the upper 3x3 matrix, i.e. 1
+    /// for a right-handed matrix, -1 for a left-handed matrix, and 0 for a
     /// singular matrix.
+    GF_API
     double GetHandedness() const;
 
-    /// Returns true if the vectors in the upper 3x3 matrix form a right-handed
-    /// coordinate system.
+    /// Returns true if the vectors in the upper 3x3 matrix form a
+    /// right-handed coordinate system.
     bool IsRightHanded() const {
         return GetHandedness() == 1.0;
     }
@@ -156,11 +162,13 @@ class GfMatrix3{{ SCL[0] }};
 
 {% block customXformFunctions %}
     /// Sets matrix to specify a uniform scaling by \e scaleFactor.
+    GF_API
     {{ MAT }}& SetScale({{ SCL }} scaleFactor);
 
     /// Returns the matrix with any scaling or shearing removed,
     /// leaving only the rotation and translation.
     /// If the matrix cannot be decomposed, returns the original matrix.
+    GF_API
     {{ MAT }} RemoveScaleShear() const;
 {% if SCL == 'double' %}
 
@@ -169,39 +177,48 @@ class GfMatrix3{{ SCL[0] }};
 
     /// Sets the matrix to specify a rotation equivalent to \e rot,
     /// and clears the translation.
+    GF_API
     {{ MAT }}& SetRotate(const GfRotation &rot);
 
     /// Sets the matrix to specify a rotation equivalent to \e rot,
     /// without clearing the translation.
+    GF_API
     {{ MAT }}& SetRotateOnly(const GfRotation &rot);
 
     /// Sets the matrix to specify a rotation equivalent to \e mx,
     /// and clears the translation.
+    GF_API
     {{ MAT }}& SetRotate(const GfMatrix3d &mx);
 
     /// Sets the matrix to specify a rotation equivalent to \e mx,
     /// without clearing the translation.
+    GF_API
     {{ MAT }}& SetRotateOnly(const GfMatrix3d &mx);
 
     /// Sets the matrix to specify a nonuniform scaling in x, y, and z by
     /// the factors in vector \e scaleFactors.
+    GF_API
     {{ MAT }}& SetScale(const GfVec3d &scaleFactors);
 
     /// Sets matrix to specify a translation by the vector \e trans,
     /// and clears the rotation.
+    GF_API
     {{ MAT }}& SetTranslate(const GfVec3d &trans);
 
     /// Sets matrix to specify a translation by the vector \e trans,
     /// without clearing the rotation.
+    GF_API
     {{ MAT }}& SetTranslateOnly(const GfVec3d &t);
 
     /// Sets matrix to specify a rotation by \e rotate and a
     /// translation by \e translate.
+    GF_API
     {{ MAT }}& SetTransform(const GfRotation& rotate,
                              const GfVec3d& translate);
 
     /// Sets matrix to specify a rotation by \e rotmx and a
     /// translation by \e translate.
+    GF_API
     {{ MAT }}& SetTransform(const GfMatrix3d& rotmx,
                              const GfVec3d& translate);
 
@@ -210,6 +227,7 @@ class GfMatrix3{{ SCL[0] }};
     /// represents the eye point in world space. \e centerPoint
     /// represents the world-space center of attention. \e upDirection
     /// is a vector indicating which way is up.
+    GF_API
     {{ MAT }}& SetLookAt(const GfVec3d &eyePoint,
                           const GfVec3d &centerPoint,
                           const GfVec3d &upDirection);
@@ -219,6 +237,7 @@ class GfMatrix3{{ SCL[0] }};
     /// orientation from its canonical frame, which is defined to be
     /// looking along the <c>-z</c> axis with the <c>+y</c> axis as the up
     /// direction.
+    GF_API
     {{ MAT }}& SetLookAt(const GfVec3d &eyePoint,
                           const GfRotation &orientation);
 
@@ -236,43 +255,46 @@ class GfMatrix3{{ SCL[0] }};
     /// Returns \c false if the matrix is singular (as determined by \e eps).
     /// In that case, any zero scales in \e s are clamped to \e eps
     /// to allow computation of \e u.
+    GF_API
     bool Factor({{ MAT }}* r, GfVec3d* s, {{ MAT }}* u,
                 GfVec3d* t, {{ MAT }}* p,
                 double eps = GF_MIN_VECTOR_LENGTH) const;
 
-    /// Returns the translation part of the matrix, defined as the
-    /// first three elements of the last row.
+    /// Returns the translation part of the matrix, defined as the first three
+    /// elements of the last row.
     GfVec3d ExtractTranslation() const {
         return GfVec3d(_mtx[3][0], _mtx[3][1], _mtx[3][2]);
     }
-    
-    /// Returns the rotation corresponding to this matrix. This works
-    /// well only if the matrix represents a rotation.
+
+    /// Returns the rotation corresponding to this matrix. This works well
+    /// only if the matrix represents a rotation.
     ///
     /// For good results, consider calling Orthonormalize() before calling
     /// this method.
+    GF_API
     GfRotation ExtractRotation() const;
 
-    /// Decompose the rotation corresponding to this matrix about 3
-    /// orthogonal axes.  If the axes are not orthogonal, warnings
-    /// will be spewed.
+    /// Decompose the rotation corresponding to this matrix about 3 orthogonal
+    /// axes.  If the axes are not orthogonal, warnings will be spewed.
     ///
     /// This is a convenience method that is equivalent to calling
     /// ExtractRotation().Decompose().
+    GF_API
     GfVec3d DecomposeRotation(const GfVec3d &axis0,
                               const GfVec3d &axis1,
                               const GfVec3d &axis2) const;
 
-    /// Returns the rotation corresponding to this matrix. This works
-    /// well only if the matrix represents a rotation.
+    /// Returns the rotation corresponding to this matrix. This works well
+    /// only if the matrix represents a rotation.
     ///
     /// For good results, consider calling Orthonormalize() before calling
     /// this method.
+    GF_API
     GfMatrix3d ExtractRotationMatrix() const;
 
-    /// Transforms the row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a 4-component vector whose
-    /// fourth component is 1.
+    /// Transforms the row vector \e vec by the matrix, returning the result.
+    /// This treats the vector as a 4-component vector whose fourth component
+    /// is 1.
     GfVec3d Transform(const GfVec3d &vec) const {
         return GfProject(GfVec4d(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }} + _mtx[3][0],
@@ -280,11 +302,11 @@ class GfMatrix3{{ SCL[0] }};
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][2]", sep=" + ", num=3) }} + _mtx[3][2],
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][3]", sep=" + ", num=3) }} + _mtx[3][3]));
     }
-    
-    /// Transforms the row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a 4-component vector whose
-    /// fourth component is 1. This is an overloaded method; it differs
-    /// from the other version in that it returns a different value type.
+
+    /// Transforms the row vector \e vec by the matrix, returning the result.
+    /// This treats the vector as a 4-component vector whose fourth component
+    /// is 1. This is an overloaded method; it differs from the other version
+    /// in that it returns a different value type.
     GfVec3f Transform(const GfVec3f &vec) const {
         return GfVec3f(GfProject(GfVec4d(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }} + _mtx[3][0],
@@ -293,24 +315,23 @@ class GfMatrix3{{ SCL[0] }};
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][3]", sep=" + ", num=3) }} + _mtx[3][3])));
     }
 
-    /// Transforms row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a direction vector, so the
-    /// translation information in the matrix is ignored. That is, it
-    /// treats the vector as a 4-component vector whose fourth
-    /// component is 0.
+    /// Transforms row vector \e vec by the matrix, returning the result. This
+    /// treats the vector as a direction vector, so the translation
+    /// information in the matrix is ignored. That is, it treats the vector as
+    /// a 4-component vector whose fourth component is 0.
     GfVec3d TransformDir(const GfVec3d &vec) const {
         return GfVec3d(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }},
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][1]", sep=" + ", num=3) }},
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][2]", sep=" + ", num=3) }});
     }
-    
-    /// Transforms row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a direction vector, so the
-    /// translation information in the matrix is ignored. That is, it
-    /// treats the vector as a 4-component vector whose fourth
-    /// component is 0.  This is an overloaded method; it differs
-    /// from the other version in that it returns a different value type.
+
+    /// Transforms row vector \e vec by the matrix, returning the result. This
+    /// treats the vector as a direction vector, so the translation
+    /// information in the matrix is ignored. That is, it treats the vector as
+    /// a 4-component vector whose fourth component is 0.  This is an
+    /// overloaded method; it differs from the other version in that it
+    /// returns a different value type.
     GfVec3f TransformDir(const GfVec3f &vec) const {
         return GfVec3f(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }},
@@ -318,10 +339,10 @@ class GfMatrix3{{ SCL[0] }};
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][2]", sep=" + ", num=3) }});
     }
 
-    /// Transforms the row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a 4-component vector whose
-    /// fourth component is 1 and ignores the fourth column of the
-    /// matrix (i.e. assumes it is (0, 0, 0, 1)).
+    /// Transforms the row vector \e vec by the matrix, returning the result.
+    /// This treats the vector as a 4-component vector whose fourth component
+    /// is 1 and ignores the fourth column of the matrix (i.e. assumes it is
+    /// (0, 0, 0, 1)).
     GfVec3d TransformAffine(const GfVec3d &vec) const {
         return GfVec3d(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }} + _mtx[3][0],
@@ -329,10 +350,10 @@ class GfMatrix3{{ SCL[0] }};
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][2]", sep=" + ", num=3) }} + _mtx[3][2]);
     }
 
-    /// Transforms the row vector \e vec by the matrix, returning the
-    /// result. This treats the vector as a 4-component vector whose
-    /// fourth component is 1 and ignores the fourth column of the
-    /// matrix (i.e. assumes it is (0, 0, 0, 1)).
+    /// Transforms the row vector \e vec by the matrix, returning the result.
+    /// This treats the vector as a 4-component vector whose fourth component
+    /// is 1 and ignores the fourth column of the matrix (i.e. assumes it is
+    /// (0, 0, 0, 1)).
     GfVec3f TransformAffine(const GfVec3f &vec) const {
         return GfVec3f(
             {{ LIST("vec[%(i)s] * _mtx[%(i)s][0]", sep=" + ", num=3) }} + _mtx[3][0],
@@ -343,14 +364,14 @@ class GfMatrix3{{ SCL[0] }};
 {% endif %}
 
 private:
-    /// Returns the determinant of the 3x3 submatrix specified by the
-    /// three given row and column indices (0-3 for each).
+    /// Returns the determinant of the 3x3 submatrix specified by the three
+    /// given row and column indices (0-3 for each).
+    GF_API
     double _GetDeterminant3(size_t row1, size_t row2, size_t row3,
        size_t col1, size_t col2, size_t col3) const;
 {% if SCL == 'double' %}
 
-    /// Diagonalizes the upper 3x3 matrix of a matrix known to be
-    /// symmetric.
+    /// Diagonalizes the upper 3x3 matrix of a matrix known to be symmetric.
     void _Jacobi3(GfVec3d *eigenvalues, GfVec3d eigenvectors[3]) const;
 {% endif %}
 {% endblock customXformFunctions %}

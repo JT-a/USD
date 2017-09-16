@@ -21,11 +21,12 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-/// \file sdf/listEditorProxy.h
-
 #ifndef SDF_LISTEDITORPROXY_H
 #define SDF_LISTEDITORPROXY_H
 
+/// \file sdf/listEditorProxy.h
+
+#include "pxr/pxr.h"
 #include "pxr/usd/sdf/listEditor.h"
 #include "pxr/usd/sdf/listProxy.h"
 #include "pxr/usd/sdf/changeBlock.h"
@@ -38,8 +39,11 @@
 #include <boost/type_traits.hpp>
 #include <boost/optional.hpp>
 
-/// \class SdfListEditorProxy sdf/listEditorProxy.h
-/// \brief Represents a set of list editing operations. 
+PXR_NAMESPACE_OPEN_SCOPE
+
+/// \class SdfListEditorProxy
+///
+/// Represents a set of list editing operations. 
 ///
 /// An SdfListEditorProxy allows consumers to specify a transformation to be
 /// applied to a list via a set of list editing operations. Given a starting 
@@ -83,7 +87,7 @@ public:
     /// Returns true if the list editor is expired.
     bool IsExpired() const
     {
-        if (not _listEditor) {
+        if (!_listEditor) {
             return false;
         }
 
@@ -141,7 +145,7 @@ public:
     /// and returns \c false, otherwise it returns \c true.
     bool CopyItems(const This& other)
     {
-        return _Validate() and other._Validate() ?
+        return _Validate() && other._Validate() ?
             _listEditor->CopyEdits(*other._listEditor) : false;
     }
 
@@ -195,7 +199,7 @@ public:
                 return true;
             }
 
-            if (not onlyAddOrExplicit) {
+            if (!onlyAddOrExplicit) {
                 i = GetDeletedItems().Find(item);
                 if (i != size_t(-1)) {
                     return true;
@@ -276,7 +280,7 @@ public:
     void Add(const value_type& value)
     {
         if (_Validate()) {
-            if (not _listEditor->IsOrderedOnly()) {
+            if (!_listEditor->IsOrderedOnly()) {
                 if (_listEditor->IsExplicit()) {
                     _AddOrReplace(SdfListOpTypeExplicit, value);
                 }
@@ -294,7 +298,7 @@ public:
             if (_listEditor->IsExplicit()) {
                 GetExplicitItems().Remove(value);
             }
-            else if (not _listEditor->IsOrderedOnly()) {
+            else if (!_listEditor->IsOrderedOnly()) {
                 GetAddedItems().Remove(value);
                 _AddIfMissing(SdfListOpTypeDeleted, value);
             }
@@ -304,7 +308,7 @@ public:
     void Erase(const value_type& value)
     {
         if (_Validate()) {
-            if (not _listEditor->IsOrderedOnly()) {
+            if (!_listEditor->IsOrderedOnly()) {
                 if (_listEditor->IsExplicit()) {
                     GetExplicitItems().Remove(value);
                 }
@@ -324,7 +328,7 @@ public:
     /// \c false otherwise.
     operator UnspecifiedBoolType() const
     {
-        return (_listEditor and _listEditor->IsValid()) ? 
+        return (_listEditor && _listEditor->IsValid()) ? 
             &This::_listEditor : NULL;
     }
 
@@ -332,13 +336,13 @@ public:
     /// \c true otherwise.
     bool operator!() const 
     { 
-        return (not _listEditor or not _listEditor->IsValid());
+        return (!_listEditor || !_listEditor->IsValid());
     }
 
 private:
     bool _Validate()
     {
-        if (not _listEditor) {
+        if (!_listEditor) {
             return false;
         }
 
@@ -351,7 +355,7 @@ private:
 
     bool _Validate() const
     {
-        if (not _listEditor) {
+        if (!_listEditor) {
             return false;
         }
 
@@ -394,9 +398,11 @@ private:
 template <class TP>
 struct Vt_DefaultValueFactory<SdfListEditorProxy<TP> > {
     static Vt_DefaultValueHolder Invoke() {
-        TF_AXIOM(false and "Failed VtValue::Get<SdfListEditorProxy> not allowed");
+        TF_AXIOM(false && "Failed VtValue::Get<SdfListEditorProxy> not allowed");
         return Vt_DefaultValueHolder::Create((void*)0);
     }
 };
 
-#endif
+PXR_NAMESPACE_CLOSE_SCOPE
+
+#endif // SDF_LISTEDITORPROXY_H

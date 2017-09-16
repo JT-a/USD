@@ -21,11 +21,13 @@
 // KIND, either express or implied. See the Apache License for the specific
 // language governing permissions and limitations under the Apache License.
 //
-/// \file sdf/reference.h
-
 #ifndef SDF_REFERENCE_H
 #define SDF_REFERENCE_H
 
+/// \file sdf/reference.h
+
+#include "pxr/pxr.h"
+#include "pxr/usd/sdf/api.h"
 #include "pxr/usd/sdf/layerOffset.h"
 #include "pxr/usd/sdf/path.h"
 #include "pxr/base/vt/dictionary.h"
@@ -37,12 +39,14 @@
 #include <string>
 #include <vector>
 
+PXR_NAMESPACE_OPEN_SCOPE
+
 class SdfReference;
 
 typedef std::vector<SdfReference> SdfReferenceVector;
 
-
 /// \class SdfReference
+///
 /// Represents a reference and all its meta data.
 ///
 /// A reference is expressed on a prim in a given layer and it identifies a
@@ -73,7 +77,7 @@ public:
     /// Creates a reference with all its meta data.  The default
     /// reference is an internal reference to the default prim.
     ///
-    SdfReference(
+    SDF_API SdfReference(
         const std::string &assetPath = std::string(),
         const SdfPath &primPath = SdfPath(),
         const SdfLayerOffset &layerOffset = SdfLayerOffset(),
@@ -137,7 +141,7 @@ public:
     ///
     /// If \a value is empty, then this removes the given custom data entry.
     ///
-    void SetCustomData(const std::string &name, const VtValue &value);
+    SDF_API void SetCustomData(const std::string &name, const VtValue &value);
 
     /// Swaps the custom data dictionary for this reference.
     void SwapCustomData(VtDictionary &customData) {
@@ -154,18 +158,18 @@ public:
     }
 
     /// Returns whether this reference equals \a rhs.
-    bool operator==(const SdfReference &rhs) const;
+    SDF_API bool operator==(const SdfReference &rhs) const;
 
     /// Returns whether this reference is less than \a rhs.  The meaning
     /// of less than is somewhat arbitrary.
-    bool operator<(const SdfReference &rhs) const;
+    SDF_API bool operator<(const SdfReference &rhs) const;
 
     /// Struct that defines equality of SdfReferences based on their
     /// identity (the asset path and prim path).
     ///
     struct IdentityEqual {
         bool operator()(const SdfReference &lhs, const SdfReference &rhs) const {
-            return lhs._assetPath == rhs._assetPath and
+            return lhs._assetPath == rhs._assetPath &&
                    lhs._primPath  == rhs._primPath;
         }
     };
@@ -175,8 +179,8 @@ public:
     ///
     struct IdentityLessThan {
         bool operator()(const SdfReference &lhs, const SdfReference &rhs) const {
-            return lhs._assetPath <  rhs._assetPath or
-                  (lhs._assetPath == rhs._assetPath and
+            return lhs._assetPath <  rhs._assetPath ||
+                  (lhs._assetPath == rhs._assetPath &&
                    lhs._primPath  <  rhs._primPath);
         }
     };
@@ -205,12 +209,14 @@ private:
 /// returned.  If more than one reference with the same identity exist in
 /// \a references the index of the first one is returned.
 ///
-int SdfFindReferenceByIdentity(
+SDF_API int SdfFindReferenceByIdentity(
     const SdfReferenceVector &references,
     const SdfReference &referenceId);
 
 /// Writes the string representation of \a SdfReference to \a out.
-std::ostream & operator<<( std::ostream &out,
+SDF_API std::ostream & operator<<( std::ostream &out,
                            const SdfReference &reference );
+
+PXR_NAMESPACE_CLOSE_SCOPE
 
 #endif // SDF_REFERENCE_H

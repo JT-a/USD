@@ -1,18 +1,14 @@
 set(PXR_PREFIX pxr/base)
 set(PXR_PACKAGE work)
 
-pxr_shared_library(work
+pxr_library(work
     LIBRARIES
         tf
         tracelite
         ${TBB_tbb_LIBRARY}
-        ${TBB_tbbmalloc_LIBRARY}
 
     INCLUDE_DIRS
         ${TBB_INCLUDE_DIRS}
-
-    PUBLIC_HEADERS
-        utils.h
 
     PUBLIC_CLASSES
         arenaDispatcher
@@ -21,7 +17,11 @@ pxr_shared_library(work
         loops
         singularTask
         threadLimits
+        utils
 
+    PUBLIC_HEADERS
+        api.h
+        
     CPPFILES
         moduleDeps.cpp
 
